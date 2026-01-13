@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EarnKP - Business Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; }
+        .page { display: none; min-height: 100vh; padding-bottom: 60px; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card { background: #0f0f0f; border: 1px solid #222; border-radius: 24px; }
+        .btn-premium { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border-radius: 14px; font-weight: 700; transition: 0.2s; }
+        .btn-premium:disabled { opacity: 0.5; cursor: not-allowed; }
+        input { background: #111 !important; border: 1px solid #333 !important; color: #fff !important; border-radius: 14px !important; padding: 14px !important; width: 100%; margin-bottom: 12px; outline: none; }
+        input:focus { border-color: #22c55e !important; }
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #080808; z-index: 1000; transition: 0.3s; border-right: 1px solid #222; }
+        #sidebar.open { left: 0; }
+        #sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: none; backdrop-filter: blur(4px); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; margin: 4px 10px; cursor: pointer; color: #888; }
+        .nav-item.active { background: #22c55e15; color: #22c55e; font-weight: bold; }
+        #loader { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #111; border-top: 4px solid #22c55e; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><div class="spinner"></div><p class="mt-4 text-xs font-bold text-zinc-500">EARNKP SECURE</p></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+    
+    <div id="sidebar">
+        <div class="p-8 border-b border-zinc-900">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-800 mb-4 flex items-center justify-center text-2xl font-bold" id="side-initial">U</div>
+            <h3 class="font-bold text-lg" id="side-name">User</h3>
+            <p class="text-green-500 text-xs font-mono font-bold" id="side-uid">KP00000</p>
+        </div>
+        <div class="py-4 overflow-y-auto h-[calc(100%-200px)]">
+            <div class="nav-item" onclick="navigate('home')"><i data-lucide="home"></i> Home</div>
+            <div class="nav-item" onclick="navigate('profile')"><i data-lucide="user"></i> Profile & Bank</div>
+            <div class="nav-item" onclick="navigate('topup')"><i data-lucide="plus-circle"></i> Topup</div>
+            <div class="nav-item" onclick="navigate('withdraw')"><i data-lucide="wallet"></i> Withdrawal</div>
+            <div class="nav-item" onclick="navigate('package')"><i data-lucide="package"></i> Buy Package</div>
+            <div class="nav-item" onclick="navigate('referral')"><i data-lucide="users"></i> Referral Team</div>
+            <div class="nav-item" onclick="navigate('income')"><i data-lucide="bar-chart-3"></i> Income Details</div>
+            <div class="nav-item" onclick="navigate('transfer')"><i data-lucide="repeat"></i> Fund Transfer</div>
+            <div id="admin-nav" class="nav-item hidden text-red-500" onclick="navigate('admin')"><i data-lucide="shield-check"></i> Admin Panel</div>
+            <div class="nav-item text-red-400 mt-10" onclick="logout()"><i data-lucide="log-out"></i> Logout</div>
+        </div>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="page-login" class="page flex items-center justify-center p-6">
+        <div class="w-full max-w-sm glass-card p-8">
+            <h1 class="text-3xl font-black text-green-500 text-center mb-8">EARNKP</h1>
+            <input type="text" id="login-uid" placeholder="User ID (KP00001)">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button onclick="login()" id="login-btn" class="btn-premium w-full py-4 mt-4">LOG IN</button>
+            <p class="text-center mt-6 text-zinc-500 text-sm">New? <button onclick="navigate('register')" class="text-green-500 font-bold">Register</button></p>
+        </div>
+    </div>
+
+    <!-- REGISTER PAGE -->
+    <div id="page-register" class="page flex items-center justify-center p-6">
+        <div class="w-full max-w-sm glass-card p-8">
+            <h2 class="text-2xl font-bold mb-6">Create Account</h2>
+            <input type="text" id="reg-name" placeholder="Full Name">
+            <input type="email" id="reg-email" placeholder="Email Address">
+            <input type="tel" id="reg-phone" placeholder="Phone Number">
+            <input type="password" id="reg-pass" placeholder="Password">
+            <input type="text" id="reg-ref" placeholder="Referral ID (Optional)">
+            <button onclick="register()" id="reg-btn" class="btn-premium w-full py-4 mt-4">REGISTER</button>
+            <button onclick="navigate('login')" class="w-full mt-4 text-zinc-500 text-sm">Back to Login</button>
+        </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page">
+        <nav class="flex justify-between items-center p-5 sticky top-0 bg-black/80 backdrop-blur-md border-b border-zinc-900 z-50">
+            <button onclick="toggleSidebar(true)"><i data-lucide="menu"></i></button>
+            <span class="font-black text-xl tracking-tighter">EARNKP</span>
+            <div class="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center font-bold" id="home-initial">U</div>
+        </nav>
+        <div class="p-5 space-y-4 max-w-md mx-auto">
+            <div class="bg-gradient-to-br from-green-600 to-green-900 p-8 rounded-[30px] shadow-xl relative overflow-hidden">
+                <p class="text-white/70 text-sm font-medium">Topup Balance</p>
+                <h2 class="text-4xl font-black mt-1" id="dash-topup">₹ 0</h2>
+                <i data-lucide="wallet" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-20 rotate-12"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-card p-6 text-center">
+                    <p class="text-zinc-500 text-[10px] font-bold uppercase mb-1">Income Balance</p>
+                    <h3 class="text-2xl font-black text-green-400" id="dash-income">₹ 0</h3>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <p class="text-zinc-500 text-[10px] font-bold uppercase mb-1">Direct Referrals</p>
+                    <h3 class="text-2xl font-black text-blue-400" id="dash-refs">0</h3>
+                </div>
+            </div>
+            <div class="glass-card p-5 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-zinc-500">Current Package</p>
+                    <p class="font-bold text-lg" id="dash-pkg">None</p>
+                </div>
+                <button onclick="navigate('package')" class="bg-white text-black text-xs font-bold px-4 py-2 rounded-lg">UPGRADE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">Profile</h1></header>
+        <div class="glass-card p-6 space-y-4 mb-6">
+            <div class="flex justify-between"><span class="text-zinc-500">User ID</span><span class="font-bold text-green-500" id="prof-uid">...</span></div>
+            <div class="flex justify-between"><span class="text-zinc-500">Full Name</span><span class="font-bold" id="prof-name">...</span></div>
+        </div>
+        <div class="glass-card p-6">
+            <h3 class="font-bold mb-4">Bank Details</h3>
+            <div id="bank-form">
+                <input type="text" id="bank-upi" placeholder="UPI ID (e.g., name@okicici)">
+                <input type="text" id="bank-acc" placeholder="Account Number">
+                <input type="text" id="bank-ifsc" placeholder="IFSC Code">
+                <button onclick="saveBank()" class="btn-premium w-full py-3 mt-2">LOCK DETAILS</button>
+                <p class="text-[10px] text-zinc-500 mt-2 text-center">Note: Bank details cannot be changed once locked.</p>
+            </div>
+            <div id="bank-locked" class="hidden p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+                <p class="text-green-500 font-bold text-sm">✅ BANK LOCKED</p>
+                <p class="text-xs mt-2 opacity-60" id="lb-upi"></p>
+                <p class="text-xs mt-1 opacity-60" id="lb-acc"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOPUP PAGE -->
+    <div id="page-topup" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">Topup Wallet</h1></header>
+        <div class="glass-card p-8 text-center space-y-6">
+            <div class="bg-zinc-950 p-4 rounded-2xl border border-dashed border-zinc-700">
+                <p class="text-zinc-500 text-xs mb-1">Send Payment to UPI</p>
+                <p class="text-green-500 font-black text-lg">krishnaarth@fam</p>
+            </div>
+            <input type="number" id="tu-amt" placeholder="Enter Amount">
+            <input type="text" id="tu-utr" placeholder="12 Digit UTR / Transaction ID">
+            <button onclick="submitTopup()" id="tu-btn" class="btn-premium w-full py-4">SUBMIT REQUEST</button>
+        </div>
+    </div>
+
+    <!-- WITHDRAWAL PAGE -->
+    <div id="page-withdraw" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">Withdraw</h1></header>
+        <div class="glass-card p-6 space-y-4">
+            <div class="bg-zinc-950 p-4 rounded-xl flex justify-between"><span>Available Income</span><span class="font-bold text-green-500" id="wd-bal">₹ 0</span></div>
+            <input type="number" id="wd-amt" placeholder="Min Withdrawal ₹100">
+            <button onclick="requestWithdraw()" id="wd-btn" class="btn-premium w-full py-4">WITHDRAW NOW</button>
+            <div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-[10px] text-yellow-500">
+                <strong>Conditions:</strong><br>
+                1. Minimum ₹100.<br>
+                2. Active ₹200 Package Required.<br>
+                3. 3 Direct Referrals with ₹200 Package Required.
+            </div>
+        </div>
+    </div>
+
+    <!-- TEAM PAGE -->
+    <div id="page-referral" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">My Team</h1></header>
+        <div class="flex gap-2 mb-6">
+            <button onclick="loadTeam(1)" class="flex-1 bg-zinc-900 py-3 rounded-xl text-xs font-bold focus:bg-green-600">Level 1</button>
+            <button onclick="loadTeam(2)" class="flex-1 bg-zinc-900 py-3 rounded-xl text-xs font-bold focus:bg-green-600">Level 2</button>
+            <button onclick="loadTeam(3)" class="flex-1 bg-zinc-900 py-3 rounded-xl text-xs font-bold focus:bg-green-600">Level 3</button>
+        </div>
+        <div id="team-list" class="space-y-3">
+            <p class="text-center text-zinc-500 text-sm">Select a level to view team</p>
+        </div>
+    </div>
+
+    <!-- INCOME PAGE -->
+    <div id="page-income" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">Income Report</h1></header>
+        <div class="glass-card p-6 space-y-4">
+            <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Daily Package ROI</span><span id="inc-pkg">₹ 0</span></div>
+            <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Level 1 Income</span><span id="inc-l1">₹ 0</span></div>
+            <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Level 2 Income</span><span id="inc-l2">₹ 0</span></div>
+            <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Level 3 Income</span><span id="inc-l3">₹ 0</span></div>
+            <div class="flex justify-between pt-2 font-bold text-green-500 text-lg"><span>Total Balance</span><span id="inc-total">₹ 0</span></div>
+        </div>
+    </div>
+
+    <!-- PACKAGE PAGE -->
+    <div id="page-package" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">Investment Packages</h1></header>
+        <div class="space-y-4">
+            <div class="glass-card p-6 flex justify-between items-center border-l-4 border-green-500">
+                <div><h3 class="font-bold text-xl">₹ 200</h3><p class="text-xs text-zinc-500">Earn ₹10 Daily</p></div>
+                <button onclick="buyPack(200)" class="bg-green-600 px-6 py-2 rounded-xl font-bold text-sm">BUY</button>
+            </div>
+            <div class="glass-card p-6 flex justify-between items-center border-l-4 border-blue-500">
+                <div><h3 class="font-bold text-xl">₹ 500</h3><p class="text-xs text-zinc-500">Earn ₹30 Daily</p></div>
+                <button onclick="buyPack(500)" class="bg-green-600 px-6 py-2 rounded-xl font-bold text-sm">BUY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSFER PAGE -->
+    <div id="page-transfer" class="page p-5 max-w-md mx-auto">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold">Fund Transfer</h1></header>
+        <div class="glass-card p-6 space-y-4">
+            <p class="text-[10px] text-zinc-500">Transfer Income Balance to another user's Topup Balance.</p>
+            <input type="text" id="tr-id" placeholder="Receiver User ID (KP...)">
+            <input type="number" id="tr-amt" placeholder="Amount">
+            <button onclick="transferFund()" id="tr-btn" class="btn-premium w-full py-4">TRANSFER NOW</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="page-admin" class="page p-5">
+        <header class="flex items-center gap-4 mb-8"><button onclick="navigate('home')" class="p-3 bg-zinc-900 rounded-xl"><i data-lucide="arrow-left"></i></button><h1 class="text-xl font-bold text-red-500">Admin Panel</h1></header>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="glass-card p-4 text-center"><p class="text-xs opacity-50">Total Users</p><h4 id="adm-u-count" class="text-xl font-bold">0</h4></div>
+            <div class="glass-card p-4 text-center"><p class="text-xs opacity-50">Active Topups</p><h4 id="adm-t-sum" class="text-xl font-bold">...</h4></div>
+        </div>
+        
+        <button onclick="distributeIncome()" id="dist-btn" class="w-full bg-red-600 py-4 rounded-xl font-black mb-8 shadow-lg">SEND DAILY INCOME (ALL)</button>
+        
+        <div class="space-y-6">
+            <div><h3 class="font-bold text-xs uppercase mb-3 opacity-50 px-2">Pending Topups</h3><div id="adm-topups" class="space-y-2"></div></div>
+            <div><h3 class="font-bold text-xs uppercase mb-3 opacity-50 px-2">Withdrawal Requests</h3><div id="adm-withdraws" class="space-y-2"></div></div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot, increment, addDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBM2yLCY-Rz10hPjYLZ-UDw9RGTiveLWEE",
+            authDomain: "earnkp-ffebc.firebaseapp.com",
+            projectId: "earnkp-ffebc",
+            storageBucket: "earnkp-ffebc.firebasestorage.app",
+            messagingSenderId: "724007533070",
+            appId: "1:724007533070:web:12e98f84828a8624429a5f",
+            measurementId: "G-HBMVH3YC3C"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let user = null;
+        let userData = null;
+
+        window.navigate = (id) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            toggleSidebar(false);
+            window.scrollTo(0,0);
+        };
+
+        window.toggleSidebar = (s) => {
+            document.getElementById('sidebar').classList.toggle('open', s);
+            document.getElementById('sidebar-overlay').style.display = s ? 'block' : 'none';
+        };
+
+        onAuthStateChanged(auth, async (u) => {
+            if (u) {
+                user = u;
+                onSnapshot(doc(db, "users", u.uid), (snap) => {
+                    if(snap.exists()){
+                        userData = snap.data();
+                        updateUI();
+                    }
+                    document.getElementById('loader').style.display = 'none';
+                });
+            } else {
+                navigate('login');
+                document.getElementById('loader').style.display = 'none';
+            }
+            lucide.createIcons();
+        });
+
+        const updateUI = () => {
+            if(!userData) return;
+            document.getElementById('dash-topup').innerText = `₹ ${userData.topupBalance || 0}`;
+            document.getElementById('dash-income').innerText = `₹ ${userData.incomeBalance || 0}`;
+            document.getElementById('dash-pkg').innerText = userData.package > 0 ? `₹ ${userData.package}` : 'None';
+            document.getElementById('wd-bal').innerText = `₹ ${userData.incomeBalance || 0}`;
+            document.getElementById('prof-name').innerText = userData.name;
+            document.getElementById('prof-uid').innerText = userData.userId;
+            document.getElementById('side-name').innerText = userData.name;
+            document.getElementById('side-uid').innerText = userData.userId;
+            document.getElementById('side-initial').innerText = userData.name[0];
+            document.getElementById('home-initial').innerText = userData.name[0];
+            
+            document.getElementById('inc-pkg').innerText = `₹ ${userData.packageIncome || 0}`;
+            document.getElementById('inc-l1').innerText = `₹ ${userData.level1Income || 0}`;
+            document.getElementById('inc-l2').innerText = `₹ ${userData.level2Income || 0}`;
+            document.getElementById('inc-l3').innerText = `₹ ${userData.level3Income || 0}`;
+            document.getElementById('inc-total').innerText = `₹ ${userData.incomeBalance || 0}`;
+
+            if(userData.role === 'admin') {
+                document.getElementById('admin-nav').classList.remove('hidden');
+                loadAdminData();
+            }
+
+            if(userData.bankLocked) {
+                document.getElementById('bank-form').classList.add('hidden');
+                document.getElementById('bank-locked').classList.remove('hidden');
+                document.getElementById('lb-upi').innerText = "UPI: " + userData.bankDetails.upi;
+                document.getElementById('lb-acc').innerText = "A/C: " + userData.bankDetails.acc;
+            }
+            
+            getDocs(query(collection(db, "users"), where("referralId", "==", userData.userId))).then(s => {
+                document.getElementById('dash-refs').innerText = s.size;
+            });
+        };
+
+        window.register = async () => {
+            const btn = document.getElementById('reg-btn');
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const ref = document.getElementById('reg-ref').value.toUpperCase().trim();
+            
+            if(!name || !email || !pass) return alert("All fields are required!");
+            btn.disabled = true; btn.innerText = "Creating Account...";
+
+            try {
+                const cRef = doc(db, "settings", "counters");
+                const resID = await runTransaction(db, async (t) => {
+                    const s = await t.get(cRef);
+                    const count = (s.exists() ? s.data().userCount : 0) + 1;
+                    const id = `KP${String(count).padStart(5, '0')}`;
+                    t.set(cRef, { userCount: count }, { merge: true });
+                    return id;
+                });
+
+                const uc = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "users", uc.user.uid), {
+                    uid: uc.user.uid, name, email, userId: resID, referralId: ref || null,
+                    topupBalance: 0, incomeBalance: 0, package: 0, role: 'user', bankLocked: false,
+                    packageIncome: 0, level1Income: 0, level2Income: 0, level3Income: 0, date: new Date()
+                });
+                await setDoc(doc(db, "idMapping", resID), { email });
+                alert("Registered Successfully! Your ID: " + resID);
+                navigate('home');
+            } catch (e) { alert(e.message); }
+            btn.disabled = false; btn.innerText = "REGISTER";
+        };
+
+        window.login = async () => {
+            const btn = document.getElementById('login-btn');
+            const id = document.getElementById('login-uid').value.trim().toUpperCase();
+            const pass = document.getElementById('login-pass').value;
+            if(!id || !pass) return alert("Enter ID & Password");
+            
+            btn.disabled = true; btn.innerText = "Verifying...";
+            try {
+                const m = await getDoc(doc(db, "idMapping", id));
+                if(!m.exists()) throw new Error("Invalid User ID");
+                await signInWithEmailAndPassword(auth, m.data().email, pass);
+                navigate('home');
+            } catch (e) { alert(e.message); }
+            btn.disabled = false; btn.innerText = "LOG IN";
+        };
+
+        window.saveBank = async () => {
+            const upi = document.getElementById('bank-upi').value;
+            const acc = document.getElementById('bank-acc').value;
+            const ifsc = document.getElementById('bank-ifsc').value;
+            if(!upi || !acc || !ifsc) return alert("Fill all bank details");
+            if(confirm("Are you sure? Bank details cannot be edited later!")) {
+                await updateDoc(doc(db, "users", user.uid), {
+                    bankDetails: { upi, acc, ifsc },
+                    bankLocked: true
+                });
+            }
+        };
+
+        window.submitTopup = async () => {
+            const amt = Number(document.getElementById('tu-amt').value);
+            const utr = document.getElementById('tu-utr').value.trim();
+            if(amt < 100 || !utr) return alert("Min ₹100 and valid UTR required");
+            
+            document.getElementById('tu-btn').disabled = true;
+            await addDoc(collection(db, "topups"), {
+                uid: user.uid, userId: userData.userId, amount: amt, utr, status: 'Pending', date: new Date()
+            });
+            alert("Topup request submitted!");
+            navigate('home');
+            document.getElementById('tu-btn').disabled = false;
+        };
+
+        window.buyPack = async (p) => {
+            if(userData.topupBalance < p) return alert("Insufficient Topup Balance!");
+            if(confirm(`Confirm activating ₹${p} package?`)) {
+                await updateDoc(doc(db, "users", user.uid), {
+                    topupBalance: increment(-p),
+                    package: p
+                });
+                alert("Package Activated!");
+            }
+        };
+
+        window.requestWithdraw = async () => {
+            const amt = Number(document.getElementById('wd-amt').value);
+            if(amt < 100) return alert("Minimum withdrawal is ₹100");
+            if(userData.incomeBalance < amt) return alert("Insufficient Income Balance");
+            if(userData.package < 200) return alert("You need at least ₹200 Package to withdraw");
+            if(!userData.bankLocked) return alert("Please lock bank details first!");
+            
+            const q = query(collection(db, "users"), where("referralId", "==", userData.userId), where("package", ">=", 200));
+            const s = await getDocs(q);
+            if(s.size < 3) return alert("3 Direct referrals with active package required!");
+
+            document.getElementById('wd-btn').disabled = true;
+            await addDoc(collection(db, "withdrawals"), {
+                uid: user.uid, userId: userData.userId, amount: amt, bank: userData.bankDetails, status: 'Pending', date: new Date()
+            });
+            await updateDoc(doc(db, "users", user.uid), { incomeBalance: increment(-amt) });
+            alert("Withdrawal request sent!");
+            document.getElementById('wd-btn').disabled = false;
+        };
+
+        window.loadTeam = async (lvl) => {
+            const list = document.getElementById('team-list');
+            list.innerHTML = "<p class='text-center py-4'>Loading team...</p>";
+            
+            try {
+                let currentIds = [userData.userId];
+                let teamData = [];
+
+                for(let i=1; i<=lvl; i++) {
+                    if(currentIds.length === 0) break;
+                    const q = query(collection(db, "users"), where("referralId", "in", currentIds));
+                    const s = await getDocs(q);
+                    currentIds = [];
+                    let levelResults = [];
+                    s.forEach(d => {
+                        const u = d.data();
+                        levelResults.push(u);
+                        currentIds.push(u.userId);
+                    });
+                    if(i === lvl) teamData = levelResults;
+                }
+
+                let h = "";
+                teamData.forEach(u => {
+                    h += `<div class="glass-card p-4 flex justify-between items-center border-l-2 ${u.package > 0 ? 'border-green-500' : 'border-red-500'}">
+                        <div>
+                            <p class="font-bold text-sm">${u.name}</p>
+                            <p class="text-[10px] text-zinc-500">${u.userId}</p>
+                        </div>
+                        <span class="text-[10px] font-bold ${u.package > 0 ? 'text-green-500' : 'text-red-400'}">
+                            ${u.package > 0 ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                    </div>`;
+                });
+                list.innerHTML = h || `<p class="text-center text-zinc-500 text-sm py-4">No team members at Level ${lvl}</p>`;
+            } catch (e) { 
+                console.error(e);
+                list.innerHTML = "<p class='text-center text-red-500'>Error loading team.</p>"; 
+            }
+        };
+
+        window.transferFund = async () => {
+            const toId = document.getElementById('tr-id').value.trim().toUpperCase();
+            const amt = Number(document.getElementById('tr-amt').value);
+            if(amt < 1) return alert("Invalid amount");
+            if(userData.incomeBalance < amt) return alert("Low balance");
+            
+            document.getElementById('tr-btn').disabled = true;
+            const q = query(collection(db, "users"), where("userId", "==", toId));
+            const s = await getDocs(q);
+            if(s.empty) {
+                alert("Receiver User ID not found");
+                document.getElementById('tr-btn').disabled = false;
+                return;
+            }
+            
+            await updateDoc(doc(db, "users", user.uid), { incomeBalance: increment(-amt) });
+            await updateDoc(doc(db, "users", s.docs[0].id), { topupBalance: increment(amt) });
+            alert("Transfer Successful!");
+            document.getElementById('tr-btn').disabled = false;
+        };
+
+        // --- ADMIN FUNCTIONS ---
+        async function loadAdminData() {
+            onSnapshot(query(collection(db, "topups"), where("status", "==", "Pending")), s => {
+                let h = "";
+                s.forEach(d => {
+                    const t = d.data();
+                    h += `<div class="glass-card p-4 flex justify-between items-center text-xs">
+                        <span>${t.userId} | ₹${t.amount}<br><span class="opacity-50">UTR: ${t.utr}</span></span>
+                        <button onclick="approveTopup('${d.id}', '${t.uid}', ${t.amount})" class="bg-green-600 px-3 py-2 rounded-lg font-bold">Approve</button>
+                    </div>`;
+                });
+                document.getElementById('adm-topups').innerHTML = h || "<p class='text-center opacity-30 py-4'>Clean!</p>";
+            });
+
+            onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), s => {
+                let h = "";
+                s.forEach(d => {
+                    const w = d.data();
+                    h += `<div class="glass-card p-4 flex justify-between items-center text-xs">
+                        <span>${w.userId} | ₹${w.amount}<br><span class="opacity-50">${w.bank.upi}</span></span>
+                        <button onclick="approveWithdraw('${d.id}')" class="bg-blue-600 px-3 py-2 rounded-lg font-bold">Paid</button>
+                    </div>`;
+                });
+                document.getElementById('adm-withdraws').innerHTML = h || "<p class='text-center opacity-30 py-4'>No requests</p>";
+            });
+
+            const uSnap = await getDocs(collection(db, "users"));
+            document.getElementById('adm-u-count').innerText = uSnap.size;
+        }
+
+        window.approveTopup = async (id, uid, amt) => {
+            if(userData.role !== 'admin') return;
+            await updateDoc(doc(db, "topups", id), { status: 'Approved' });
+            await updateDoc(doc(db, "users", uid), { topupBalance: increment(amt) });
+            alert("Topup Approved!");
+        };
+
+        window.approveWithdraw = async (id) => {
+            if(userData.role !== 'admin') return;
+            await updateDoc(doc(db, "withdrawals", id), { status: 'Paid' });
+            alert("Marked as Paid!");
+        };
+
+        window.distributeIncome = async () => {
+            if(userData.role !== 'admin') return;
+            if(!confirm("Start distributing daily ROI and Level Income to all users?")) return;
+            
+            const btn = document.getElementById('dist-btn');
+            btn.disabled = true; btn.innerText = "Processing...";
+            
+            try {
+                const allUsers = await getDocs(collection(db, "users"));
+                let count = 0;
+
+                for(let uDoc of allUsers.docs) {
+                    const u = uDoc.data();
+                    let pkgInc = 0;
+                    if(u.package === 200) pkgInc = 10;
+                    else if(u.package === 500) pkgInc = 30;
+
+                    if(pkgInc > 0) {
+                        // 1. Give Daily ROI
+                        await updateDoc(doc(db, "users", uDoc.id), { 
+                            incomeBalance: increment(pkgInc),
+                            packageIncome: increment(pkgInc)
+                        });
+
+                        // 2. Multi-Level Referral Income (L1=₹7, L2=₹18, L3=₹5)
+                        let ref1 = u.referralId;
+                        if(ref1) {
+                            const q1 = query(collection(db, "users"), where("userId", "==", ref1));
+                            const s1 = await getDocs(q1);
+                            if(!s1.empty && s1.docs[0].data().package >= 200) {
+                                await updateDoc(doc(db, "users", s1.docs[0].id), { incomeBalance: increment(7), level1Income: increment(7) });
+                                
+                                let ref2 = s1.docs[0].data().referralId;
+                                if(ref2) {
+                                    const q2 = query(collection(db, "users"), where("userId", "==", ref2));
+                                    const s2 = await getDocs(q2);
+                                    if(!s2.empty && s2.docs[0].data().package >= 200) {
+                                        await updateDoc(doc(db, "users", s2.docs[0].id), { incomeBalance: increment(18), level2Income: increment(18) });
+                                        
+                                        let ref3 = s2.docs[0].data().referralId;
+                                        if(ref3) {
+                                            const q3 = query(collection(db, "users"), where("userId", "==", ref3));
+                                            const s3 = await getDocs(q3);
+                                            if(!s3.empty && s3.docs[0].data().package >= 200) {
+                                                await updateDoc(doc(db, "users", s3.docs[0].id), { incomeBalance: increment(5), level3Income: increment(5) });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        count++;
+                    }
+                }
+                alert(`Success! Income sent to ${count} active users.`);
+            } catch (e) { alert("Error: " + e.message); }
+            btn.disabled = false; btn.innerText = "SEND DAILY INCOME (ALL)";
+        };
+
+        window.logout = () => signOut(auth).then(() => location.reload());
+    </script>
+</body>
+</html>
