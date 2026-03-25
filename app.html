@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EarnKP - Business Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; margin: 0; }
+        .page { display: none; min-height: 100vh; padding-bottom: 60px; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .glass-card { background: #0f0f0f; border: 1px solid #222; border-radius: 20px; }
+        .btn-premium { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border-radius: 14px; font-weight: 700; transition: 0.2s; border: none; }
+        .btn-premium:disabled { opacity: 0.5; cursor: not-allowed; }
+        input { background: #111 !important; border: 1px solid #333 !important; color: #fff !important; border-radius: 14px !important; padding: 14px !important; width: 100%; margin-bottom: 12px; outline: none; box-sizing: border-box; }
+        input:focus { border-color: #22c55e !important; }
+        
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #080808; z-index: 1000; transition: 0.3s; border-right: 1px solid #222; }
+        #sidebar.open { left: 0; }
+        #sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: none; backdrop-filter: blur(4px); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; margin: 4px 10px; cursor: pointer; color: #888; }
+        .nav-item.active { background: #22c55e15; color: #22c55e; font-weight: bold; }
+        
+        #loader { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #111; border-top: 4px solid #22c55e; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- BULLETPROOF CUSTOM CSS FOR HOME PAGE --- */
+        .home-ui p, .home-ui h2, .home-ui h3 { margin: 0; padding: 0; }
+        
+        .c-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #000; position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #111; }
+        .c-menu-btn { background: transparent; border: none; color: white; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .c-title { font-weight: 900; font-size: 18px; letter-spacing: 0.5px; color: #fff; }
+        .c-avatar { width: 36px; height: 36px; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px; color: #fff; }
+        
+        .c-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
+        
+        .c-green-card { background: #249643; border-radius: 24px; padding: 26px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; height: 130px; box-sizing: border-box; }
+        .c-green-label { color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 500; margin-bottom: 6px !important; position: relative; z-index: 10; }
+        .c-green-val { color: #fff; font-size: 36px; font-weight: 900; position: relative; z-index: 10; line-height: 1; }
+        .c-green-icon { position: absolute; right: -20px; bottom: -30px; width: 150px; height: 150px; color: #000; opacity: 0.1; transform: rotate(-15deg); z-index: 1; }
+        
+        .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        
+        .c-dark-card { background: #0f0f0f; border: 1px solid #222; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 105px; box-sizing: border-box; text-align: center; }
+        .c-dark-label { color: #777; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px !important; }
+        .c-val-inc { color: #34d399; font-size: 24px; font-weight: 900; line-height: 1; }
+        .c-val-ref { color: #60a5fa; font-size: 24px; font-weight: 900; line-height: 1; }
+        
+        .c-pkg-card { background: #0f0f0f; border: 1px solid #222; border-radius: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        .c-pkg-label { font-size: 11px; color: #777; margin-bottom: 6px !important; }
+        .c-pkg-val { font-size: 18px; font-weight: 700; color: #fff; line-height: 1; }
+        .c-btn-upg { background: #fff; color: #000; font-size: 11px; font-weight: 800; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><div class="spinner"></div><p class="mt-4 text-xs font-bold text-zinc-500" style="color:#777; margin-top:16px; font-size:12px; font-weight:bold;">EARNKP SECURE</p></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+    
+    <div id="sidebar">
+        <div class="p-8 border-b border-zinc-900" style="padding: 32px; border-bottom: 1px solid #111;">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-800 mb-4 flex items-center justify-center text-2xl font-bold" id="side-initial" style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(to bottom right, #22c55e, #166534); display:flex; align-items:center; justify-content:center; font-size: 24px; font-weight: bold; margin-bottom: 16px;">U</div>
+            <h3 class="font-bold text-lg" id="side-name" style="margin:0; font-weight:bold; font-size: 18px;">User</h3>
+            <p class="text-green-500 text-xs font-mono font-bold" id="side-uid" style="margin:0; color:#22c55e; font-size:12px; font-family:monospace; font-weight:bold;">KP00000</p>
+        </div>
+        <div class="py-4 overflow-y-auto h-[calc(100%-200px)]">
+            <div class="nav-item" onclick="navigate('home')"><i data-lucide="home"></i> Home</div>
+            <div class="nav-item" onclick="navigate('profile')"><i data-lucide="user"></i> Profile & Bank</div>
+            <div class="nav-item" onclick="navigate('topup')"><i data-lucide="plus-circle"></i> Topup</div>
+            <div class="nav-item" onclick="navigate('withdraw')"><i data-lucide="wallet"></i> Withdrawal</div>
+            <div class="nav-item" onclick="navigate('package')"><i data-lucide="package"></i> Buy Package</div>
+            <div class="nav-item" onclick="navigate('referral')"><i data-lucide="users"></i> Referral Team</div>
+            <div class="nav-item" onclick="navigate('income')"><i data-lucide="bar-chart-3"></i> Income Details</div>
+            <div class="nav-item" onclick="navigate('transfer')"><i data-lucide="repeat"></i> Fund Transfer</div>
+            <div id="admin-nav" class="nav-item hidden text-red-500" onclick="navigate('admin')" style="color:#ef4444; display:none;"><i data-lucide="shield-check"></i> Admin Panel</div>
+            <div class="nav-item text-red-400 mt-10" onclick="logout()" style="color:#f87171; margin-top:40px;"><i data-lucide="log-out"></i> Logout</div>
+        </div>
+    </div>
+
+    <!-- HOME PAGE (FULLY CUSTOM STYLED) -->
+    <div id="page-home" class="page active home-ui">
+        
+        <div class="c-nav">
+            <button onclick="toggleSidebar(true)" class="c-menu-btn"><i data-lucide="menu"></i></button>
+            <span class="c-title">EARNKP</span>
+            <div class="c-avatar" id="home-initial">k</div>
+        </div>
+        
+        <div class="c-body">
+            
+            <div class="c-green-card">
+                <p class="c-green-label">Topup Balance</p>
+                <h2 class="c-green-val" id="dash-topup">₹ 5640</h2>
+                <i data-lucide="wallet" class="c-green-icon" stroke-width="2"></i>
+            </div>
+
+            <div class="c-grid">
+                <div class="c-dark-card">
+                    <p class="c-dark-label">INCOME BALANCE</p>
+                    <h3 class="c-val-inc" id="dash-income">₹ 34590</h3>
+                </div>
+                <div class="c-dark-card">
+                    <p class="c-dark-label">DIRECT REFERRALS</p>
+                    <h3 class="c-val-ref" id="dash-refs">0</h3>
+                </div>
+            </div>
+
+            <div class="c-pkg-card">
+                <div>
+                    <p class="c-pkg-label">Current Package</p>
+                    <p class="c-pkg-val" id="dash-pkg">₹ 500</p>
+                </div>
+                <button onclick="navigate('package')" class="c-btn-upg">UPGRADE</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Profile</h1></header>
+        <div class="glass-card" style="padding:24px; margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;"><span style="color:#777;">User ID</span><span style="font-weight:bold; color:#22c55e;" id="prof-uid">...</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:#777;">Full Name</span><span style="font-weight:bold;" id="prof-name">...</span></div>
+        </div>
+        <div class="glass-card" style="padding:24px;">
+            <h3 style="font-weight:bold; margin-top:0; margin-bottom:16px;">Bank Details</h3>
+            <div id="bank-form">
+                <input type="text" id="bank-upi" placeholder="UPI ID (e.g., name@okicici)">
+                <input type="text" id="bank-acc" placeholder="Account Number">
+                <input type="text" id="bank-ifsc" placeholder="IFSC Code">
+                <button onclick="saveBank()" class="btn-premium" style="width:100%; padding:14px; margin-top:8px;">LOCK DETAILS</button>
+                <p style="font-size:10px; color:#777; margin-top:12px; text-align:center;">Note: Bank details cannot be changed once locked.</p>
+            </div>
+            <div id="bank-locked" style="display:none; padding:16px; background:rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.2); border-radius:12px;">
+                <p style="color:#22c55e; font-weight:bold; font-size:14px; margin:0;">✅ BANK LOCKED</p>
+                <p style="font-size:12px; margin-top:8px; opacity:0.6; margin-bottom:0;" id="lb-upi"></p>
+                <p style="font-size:12px; margin-top:4px; opacity:0.6; margin-bottom:0;" id="lb-acc"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOPUP PAGE -->
+    <div id="page-topup" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Topup Wallet</h1></header>
+        <div class="glass-card" style="padding:32px; text-align:center;">
+            <div style="background:#050505; padding:16px; border-radius:16px; border:1px dashed #333; margin-bottom:24px;">
+                <p style="color:#777; font-size:12px; margin:0 0 4px 0;">Send Payment to UPI</p>
+                <p style="color:#22c55e; font-weight:900; font-size:18px; margin:0;">krishnaarth@fam</p>
+            </div>
+            <input type="number" id="tu-amt" placeholder="Enter Amount">
+            <input type="text" id="tu-utr" placeholder="12 Digit UTR / Transaction ID">
+            <button onclick="submitTopup()" id="tu-btn" class="btn-premium" style="width:100%; padding:16px; margin-top:8px;">SUBMIT REQUEST</button>
+        </div>
+    </div>
+
+    <!-- WITHDRAWAL PAGE -->
+    <div id="page-withdraw" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Withdraw</h1></header>
+        <div class="glass-card" style="padding:24px;">
+            <div style="background:#050505; padding:16px; border-radius:12px; display:flex; justify-content:space-between; margin-bottom:16px;"><span>Available Income</span><span style="font-weight:bold; color:#22c55e;" id="wd-bal">₹ 0</span></div>
+            <input type="number" id="wd-amt" placeholder="Min Withdrawal ₹100">
+            <button onclick="requestWithdraw()" id="wd-btn" class="btn-premium" style="width:100%; padding:16px; margin-bottom:16px;">WITHDRAW NOW</button>
+            <div style="padding:16px; background:rgba(234, 179, 8, 0.1); border:1px solid rgba(234, 179, 8, 0.2); border-radius:12px; font-size:10px; color:#eab308; line-height:1.5;">
+                <strong>Conditions:</strong><br>
+                1. Minimum ₹100.<br>
+                2. Active ₹200 Package Required.<br>
+                3. 3 Direct Referrals with ₹200 Package Required.
+            </div>
+        </div>
+    </div>
+
+    <!-- TEAM PAGE -->
+    <div id="page-referral" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">My Team</h1></header>
+        <div style="display:flex; gap:8px; margin-bottom:24px;">
+            <button onclick="loadTeam(1)" style="flex:1; background:#111; padding:12px; border-radius:12px; font-size:12px; font-weight:bold; color:white; border:none;">Level 1</button>
+            <button onclick="loadTeam(2)" style="flex:1; background:#111; padding:12px; border-radius:12px; font-size:12px; font-weight:bold; color:white; border:none;">Level 2</button>
+            <button onclick="loadTeam(3)" style="flex:1; background:#111; padding:12px; border-radius:12px; font-size:12px; font-weight:bold; color:white; border:none;">Level 3</button>
+        </div>
+        <div id="team-list" style="display:flex; flex-direction:column; gap:12px;">
+            <p style="text-align:center; color:#777; font-size:14px;">Select a level to view team</p>
+        </div>
+    </div>
+
+    <!-- INCOME PAGE -->
+    <div id="page-income" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Income Report</h1></header>
+        <div class="glass-card" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Daily Package ROI</span><span id="inc-pkg">₹ 0</span></div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Level 1 Income</span><span id="inc-l1">₹ 0</span></div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Level 2 Income</span><span id="inc-l2">₹ 0</span></div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Level 3 Income</span><span id="inc-l3">₹ 0</span></div>
+            <div style="display:flex; justify-content:space-between; padding-top:8px; font-weight:bold; color:#22c55e; font-size:18px;"><span>Total Balance</span><span id="inc-total">₹ 0</span></div>
+        </div>
+    </div>
+
+    <!-- PACKAGE PAGE -->
+    <div id="page-package" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Investment Packages</h1></header>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="glass-card" style="padding:24px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #22c55e;">
+                <div><h3 style="font-weight:bold; font-size:20px; margin:0 0 4px 0;">₹ 200</h3><p style="font-size:12px; color:#777; margin:0;">Earn ₹10 Daily</p></div>
+                <button onclick="buyPack(200)" style="background:#16a34a; padding:8px 24px; border-radius:12px; font-weight:bold; font-size:14px; border:none; color:white;">BUY</button>
+            </div>
+            <div class="glass-card" style="padding:24px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #3b82f6;">
+                <div><h3 style="font-weight:bold; font-size:20px; margin:0 0 4px 0;">₹ 500</h3><p style="font-size:12px; color:#777; margin:0;">Earn ₹30 Daily</p></div>
+                <button onclick="buyPack(500)" style="background:#16a34a; padding:8px 24px; border-radius:12px; font-weight:bold; font-size:14px; border:none; color:white;">BUY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSFER PAGE -->
+    <div id="page-transfer" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Fund Transfer</h1></header>
+        <div class="glass-card" style="padding:24px;">
+            <p style="font-size:10px; color:#777; margin:0 0 16px 0;">Transfer Income Balance to another user's Topup Balance.</p>
+            <input type="text" id="tr-id" placeholder="Receiver User ID (KP...)">
+            <input type="number" id="tr-amt" placeholder="Amount">
+            <button onclick="transferFund()" id="tr-btn" class="btn-premium" style="width:100%; padding:16px;">TRANSFER NOW</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="page-admin" class="page p-5" style="padding: 20px;">
+        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; color:#ef4444; margin:0;">Admin Panel</h1></header>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+            <div class="glass-card" style="padding:16px; text-align:center;"><p style="font-size:12px; opacity:0.5; margin:0 0 8px 0;">Total Users</p><h4 id="adm-u-count" style="font-size:20px; font-weight:bold; margin:0;">0</h4></div>
+            <div class="glass-card" style="padding:16px; text-align:center;"><p style="font-size:12px; opacity:0.5; margin:0 0 8px 0;">Active Topups</p><h4 id="adm-t-sum" style="font-size:20px; font-weight:bold; margin:0;">...</h4></div>
+        </div>
+        
+        <button onclick="distributeIncome()" id="dist-btn" style="width:100%; background:#dc2626; padding:16px; border-radius:12px; font-weight:900; margin-bottom:32px; color:white; border:none; box-shadow:0 4px 10px rgba(0,0,0,0.5);">SEND DAILY INCOME (ALL)</button>
+        
+        <div style="display:flex; flex-direction:column; gap:24px;">
+            <div><h3 style="font-weight:bold; font-size:12px; text-transform:uppercase; margin-bottom:12px; opacity:0.5; padding:0 8px;">Pending Topups</h3><div id="adm-topups" style="display:flex; flex-direction:column; gap:8px;"></div></div>
+            <div><h3 style="font-weight:bold; font-size:12px; text-transform:uppercase; margin-bottom:12px; opacity:0.5; padding:0 8px;">Withdrawal Requests</h3><div id="adm-withdraws" style="display:flex; flex-direction:column; gap:8px;"></div></div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, increment, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLMR-GDPWtcwn9Hn6eItlC2Qug-yhWZWY",
+            authDomain: "earnkp-fed45.firebaseapp.com",
+            projectId: "earnkp-fed45",
+            storageBucket: "earnkp-fed45.firebasestorage.app",
+            messagingSenderId: "519353079447",
+            appId: "1:519353079447:web:d82b8cc4a8d741b43f3bd2",
+            measurementId: "G-HBMVH3YC3C"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let user = null;
+        let userData = null;
+
+        window.navigate = (id) => {
+            const target = document.getElementById('page-' + id);
+            if (!target) return; 
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            target.classList.add('active');
+            toggleSidebar(false);
+            window.scrollTo(0,0);
+        };
+
+        window.toggleSidebar = (s) => {
+            document.getElementById('sidebar').classList.toggle('open', s);
+            document.getElementById('sidebar-overlay').style.display = s ? 'block' : 'none';
+        };
+
+        onAuthStateChanged(auth, async (u) => {
+            if (u) {
+                user = u;
+                onSnapshot(doc(db, "users", u.uid), (snap) => {
+                    if(snap.exists()){
+                        userData = snap.data();
+                        updateUI();
+                    }
+                    document.getElementById('loader').style.display = 'none';
+                });
+            } else {
+                window.location.href = 'login.html'; 
+            }
+            lucide.createIcons();
+        });
+
+        const updateUI = () => {
+            if(!userData) return;
+            document.getElementById('dash-topup').innerText = `₹ ${userData.topupBalance || 0}`;
+            document.getElementById('dash-income').innerText = `₹ ${userData.incomeBalance || 0}`;
+            document.getElementById('dash-pkg').innerText = userData.package > 0 ? `₹ ${userData.package}` : 'None';
+            document.getElementById('wd-bal').innerText = `₹ ${userData.incomeBalance || 0}`;
+            document.getElementById('prof-name').innerText = userData.name;
+            document.getElementById('prof-uid').innerText = userData.userId;
+            document.getElementById('side-name').innerText = userData.name;
+            document.getElementById('side-uid').innerText = userData.userId;
+            document.getElementById('side-initial').innerText = userData.name[0].toUpperCase();
+            document.getElementById('home-initial').innerText = userData.name[0].toLowerCase();
+            
+            document.getElementById('inc-pkg').innerText = `₹ ${userData.packageIncome || 0}`;
+            document.getElementById('inc-l1').innerText = `₹ ${userData.level1Income || 0}`;
+            document.getElementById('inc-l2').innerText = `₹ ${userData.level2Income || 0}`;
+            document.getElementById('inc-l3').innerText = `₹ ${userData.level3Income || 0}`;
+            document.getElementById('inc-total').innerText = `₹ ${userData.incomeBalance || 0}`;
+
+            if(userData.role === 'admin') {
+                document.getElementById('admin-nav').style.display = 'flex';
+                loadAdminData();
+            }
+
+            if(userData.bankLocked) {
+                document.getElementById('bank-form').style.display = 'none';
+                document.getElementById('bank-locked').style.display = 'block';
+                document.getElementById('lb-upi').innerText = "UPI: " + userData.bankDetails.upi;
+                document.getElementById('lb-acc').innerText = "A/C: " + userData.bankDetails.acc;
+            }
+            
+            getDocs(query(collection(db, "users"), where("referralId", "==", userData.userId))).then(s => {
+                document.getElementById('dash-refs').innerText = s.size;
+            });
+        };
+
+        window.saveBank = async () => {
+            const upi = document.getElementById('bank-upi').value;
+            const acc = document.getElementById('bank-acc').value;
+            const ifsc = document.getElementById('bank-ifsc').value;
+            if(!upi || !acc || !ifsc) return alert("Fill all bank details");
+            if(confirm("Are you sure? Bank details cannot be edited later!")) {
+                await updateDoc(doc(db, "users", user.uid), {
+                    bankDetails: { upi, acc, ifsc },
+                    bankLocked: true
+                });
+            }
+        };
+
+        window.submitTopup = async () => {
+            const amt = Number(document.getElementById('tu-amt').value);
+            const utr = document.getElementById('tu-utr').value.trim();
+            if(amt < 100 || !utr) return alert("Min ₹100 and valid UTR required");
+            
+            document.getElementById('tu-btn').disabled = true;
+            await addDoc(collection(db, "topups"), {
+                uid: user.uid, userId: userData.userId, amount: amt, utr, status: 'Pending', date: new Date()
+            });
+            alert("Topup request submitted!");
+            navigate('home');
+            document.getElementById('tu-btn').disabled = false;
+        };
+
+        window.buyPack = async (p) => {
+            if(userData.topupBalance < p) return alert("Insufficient Topup Balance!");
+            if(confirm(`Confirm activating ₹${p} package?`)) {
+                await updateDoc(doc(db, "users", user.uid), {
+                    topupBalance: increment(-p),
+                    package: p
+                });
+                alert("Package Activated!");
+            }
+        };
+
+        window.requestWithdraw = async () => {
+            const amt = Number(document.getElementById('wd-amt').value);
+            if(amt < 100) return alert("Minimum withdrawal is ₹100");
+            if(userData.incomeBalance < amt) return alert("Insufficient Income Balance");
+            if(userData.package < 200) return alert("You need at least ₹200 Package to withdraw");
+            if(!userData.bankLocked) return alert("Please lock bank details first!");
+            
+            const q = query(collection(db, "users"), where("referralId", "==", userData.userId), where("package", ">=", 200));
+            const s = await getDocs(q);
+            if(s.size < 3) return alert("3 Direct referrals with active package required!");
+
+            document.getElementById('wd-btn').disabled = true;
+            await addDoc(collection(db, "withdrawals"), {
+                uid: user.uid, userId: userData.userId, amount: amt, bank: userData.bankDetails, status: 'Pending', date: new Date()
+            });
+            await updateDoc(doc(db, "users", user.uid), { incomeBalance: increment(-amt) });
+            alert("Withdrawal request sent!");
+            document.getElementById('wd-btn').disabled = false;
+        };
+
+        window.loadTeam = async (lvl) => {
+            const list = document.getElementById('team-list');
+            list.innerHTML = "<p style='text-align:center; padding:16px;'>Loading team...</p>";
+            
+            try {
+                let currentIds = [userData.userId];
+                let teamData = [];
+
+                for(let i=1; i<=lvl; i++) {
+                    if(currentIds.length === 0) break;
+                    const q = query(collection(db, "users"), where("referralId", "in", currentIds));
+                    const s = await getDocs(q);
+                    currentIds = [];
+                    let levelResults = [];
+                    s.forEach(d => {
+                        const u = d.data();
+                        levelResults.push(u);
+                        currentIds.push(u.userId);
+                    });
+                    if(i === lvl) teamData = levelResults;
+                }
+
+                let h = "";
+                teamData.forEach(u => {
+                    const isActive = u.package > 0;
+                    h += `<div class="glass-card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; border-left:2px solid ${isActive ? '#22c55e' : '#ef4444'};">
+                        <div>
+                            <p style="font-weight:bold; font-size:14px; margin:0 0 4px 0;">${u.name}</p>
+                            <p style="font-size:10px; color:#777; margin:0;">${u.userId}</p>
+                        </div>
+                        <span style="font-size:10px; font-weight:bold; color:${isActive ? '#22c55e' : '#f87171'};">
+                            ${isActive ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                    </div>`;
+                });
+                list.innerHTML = h || `<p style="text-align:center; color:#777; font-size:14px; padding:16px;">No team members at Level ${lvl}</p>`;
+            } catch (e) { 
+                console.error(e);
+                list.innerHTML = "<p style='text-align:center; color:#ef4444;'>Error loading team.</p>"; 
+            }
+        };
+
+        window.transferFund = async () => {
+            const toId = document.getElementById('tr-id').value.trim().toUpperCase();
+            const amt = Number(document.getElementById('tr-amt').value);
+            if(amt < 1) return alert("Invalid amount");
+            if(userData.incomeBalance < amt) return alert("Low balance");
+            
+            document.getElementById('tr-btn').disabled = true;
+            const q = query(collection(db, "users"), where("userId", "==", toId));
+            const s = await getDocs(q);
+            if(s.empty) {
+                alert("Receiver User ID not found");
+                document.getElementById('tr-btn').disabled = false;
+                return;
+            }
+            
+            await updateDoc(doc(db, "users", user.uid), { incomeBalance: increment(-amt) });
+            await updateDoc(doc(db, "users", s.docs[0].id), { topupBalance: increment(amt) });
+            alert("Transfer Successful!");
+            document.getElementById('tr-btn').disabled = false;
+        };
+
+        async function loadAdminData() {
+            onSnapshot(query(collection(db, "topups"), where("status", "==", "Pending")), s => {
+                let h = "";
+                s.forEach(d => {
+                    const t = d.data();
+                    h += `<div class="glass-card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span>${t.userId} | ₹${t.amount}<br><span style="opacity:0.5;">UTR: ${t.utr}</span></span>
+                        <button onclick="approveTopup('${d.id}', '${t.uid}', ${t.amount})" style="background:#16a34a; padding:8px 12px; border-radius:8px; font-weight:bold; color:white; border:none;">Approve</button>
+                    </div>`;
+                });
+                document.getElementById('adm-topups').innerHTML = h || "<p style='text-align:center; opacity:0.3; padding:16px;'>Clean!</p>";
+            });
+
+            onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), s => {
+                let h = "";
+                s.forEach(d => {
+                    const w = d.data();
+                    h += `<div class="glass-card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span>${w.userId} | ₹${w.amount}<br><span style="opacity:0.5;">${w.bank ? w.bank.upi : '...'}</span></span>
+                        <button onclick="approveWithdraw('${d.id}')" style="background:#2563eb; padding:8px 12px; border-radius:8px; font-weight:bold; color:white; border:none;">Paid</button>
+                    </div>`;
+                });
+                document.getElementById('adm-withdraws').innerHTML = h || "<p style='text-align:center; opacity:0.3; padding:16px;'>No requests</p>";
+            });
+
+            const uSnap = await getDocs(collection(db, "users"));
+            document.getElementById('adm-u-count').innerText = uSnap.size;
+        }
+
+        window.approveTopup = async (id, uid, amt) => {
+            if(userData.role !== 'admin') return;
+            await updateDoc(doc(db, "topups", id), { status: 'Approved' });
+            await updateDoc(doc(db, "users", uid), { topupBalance: increment(amt) });
+            alert("Topup Approved!");
+        };
+
+        window.approveWithdraw = async (id) => {
+            if(userData.role !== 'admin') return;
+            await updateDoc(doc(db, "withdrawals", id), { status: 'Paid' });
+            alert("Marked as Paid!");
+        };
+
+        window.distributeIncome = async () => {
+            if(userData.role !== 'admin') return;
+            if(!confirm("Start distributing daily ROI and Level Income?")) return;
+            const btn = document.getElementById('dist-btn');
+            btn.disabled = true; btn.innerText = "Processing...";
+            try {
+                const allUsers = await getDocs(collection(db, "users"));
+                let count = 0;
+                for(let uDoc of allUsers.docs) {
+                    const u = uDoc.data();
+                    let pkgInc = (u.package === 200) ? 10 : (u.package === 500 ? 30 : 0);
+                    if(pkgInc > 0) {
+                        await updateDoc(doc(db, "users", uDoc.id), { incomeBalance: increment(pkgInc), packageIncome: increment(pkgInc) });
+                        // Level Logic
+                        let r1 = u.referralId;
+                        if(r1) {
+                            const q1 = query(collection(db, "users"), where("userId", "==", r1));
+                            const s1 = await getDocs(q1);
+                            if(!s1.empty && s1.docs[0].data().package >= 200) {
+                                await updateDoc(doc(db, "users", s1.docs[0].id), { incomeBalance: increment(7), level1Income: increment(7) });
+                                let r2 = s1.docs[0].data().referralId;
+                                if(r2) {
+                                    const q2 = query(collection(db, "users"), where("userId", "==", r2));
+                                    const s2 = await getDocs(q2);
+                                    if(!s2.empty && s2.docs[0].data().package >= 200) {
+                                        await updateDoc(doc(db, "users", s2.docs[0].id), { incomeBalance: increment(18), level2Income: increment(18) });
+                                        let r3 = s2.docs[0].data().referralId;
+                                        if(r3) {
+                                            const q3 = query(collection(db, "users"), where("userId", "==", r3));
+                                            const s3 = await getDocs(q3);
+                                            if(!s3.empty && s3.docs[0].data().package >= 200) {
+                                                await updateDoc(doc(db, "users", s3.docs[0].id), { incomeBalance: increment(5), level3Income: increment(5) });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        count++;
+                    }
+                }
+                alert(`Success! Sent to ${count} users.`);
+            } catch (e) { alert(e.message); }
+            btn.disabled = false; btn.innerText = "SEND DAILY INCOME (ALL)";
+        };
+
+        window.logout = () => signOut(auth).then(() => window.location.href = 'login.html');
+    </script>
+</body>
+</html>
