@@ -226,126 +226,6 @@
     </div>
 
     <!-- ADMIN PANEL -->
-    <div id="p                </div>
-            </div>
-
-            <div class="c-pkg-card">
-                <div>
-                    <p class="c-pkg-label">Current Package</p>
-                    <p class="c-pkg-val" id="dash-pkg">₹ 500</p>
-                </div>
-                <button onclick="navigate('package')" class="c-btn-upg">UPGRADE</button>
-            </div>
-            
-        </div>
-    </div>
-
-    <!-- PROFILE PAGE -->
-    <div id="page-profile" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Profile</h1></header>
-        <div class="glass-card" style="padding:24px; margin-bottom:24px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:16px;"><span style="color:#777;">User ID</span><span style="font-weight:bold; color:#22c55e;" id="prof-uid">...</span></div>
-            <div style="display:flex; justify-content:space-between;"><span style="color:#777;">Full Name</span><span style="font-weight:bold;" id="prof-name">...</span></div>
-        </div>
-        <div class="glass-card" style="padding:24px;">
-            <h3 style="font-weight:bold; margin-top:0; margin-bottom:16px;">Bank Details</h3>
-            <div id="bank-form">
-                <input type="text" id="bank-upi" placeholder="UPI ID (e.g., name@okicici)">
-                <input type="text" id="bank-acc" placeholder="Account Number">
-                <input type="text" id="bank-ifsc" placeholder="IFSC Code">
-                <button onclick="saveBank()" class="btn-premium" style="width:100%; padding:14px; margin-top:8px;">LOCK DETAILS</button>
-                <p style="font-size:10px; color:#777; margin-top:12px; text-align:center;">Note: Bank details cannot be changed once locked.</p>
-            </div>
-            <div id="bank-locked" style="display:none; padding:16px; background:rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.2); border-radius:12px;">
-                <p style="color:#22c55e; font-weight:bold; font-size:14px; margin:0;">✅ BANK LOCKED</p>
-                <p style="font-size:12px; margin-top:8px; opacity:0.6; margin-bottom:0;" id="lb-upi"></p>
-                <p style="font-size:12px; margin-top:4px; opacity:0.6; margin-bottom:0;" id="lb-acc"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOPUP PAGE -->
-    <div id="page-topup" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Topup Wallet</h1></header>
-        <div class="glass-card" style="padding:32px; text-align:center;">
-            <div style="background:#050505; padding:16px; border-radius:16px; border:1px dashed #333; margin-bottom:24px;">
-                <p style="color:#777; font-size:12px; margin:0 0 4px 0;">Send Payment to UPI</p>
-                <p style="color:#22c55e; font-weight:900; font-size:18px; margin:0;">krishnaarth@fam</p>
-            </div>
-            <input type="number" id="tu-amt" placeholder="Enter Amount">
-            <input type="text" id="tu-utr" placeholder="12 Digit UTR / Transaction ID">
-            <button onclick="submitTopup()" id="tu-btn" class="btn-premium" style="width:100%; padding:16px; margin-top:8px;">SUBMIT REQUEST</button>
-        </div>
-    </div>
-
-    <!-- WITHDRAWAL PAGE -->
-    <div id="page-withdraw" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Withdraw</h1></header>
-        <div class="glass-card" style="padding:24px;">
-            <div style="background:#050505; padding:16px; border-radius:12px; display:flex; justify-content:space-between; margin-bottom:16px;"><span>Available Income</span><span style="font-weight:bold; color:#22c55e;" id="wd-bal">₹ 0</span></div>
-            <input type="number" id="wd-amt" placeholder="Min Withdrawal ₹100">
-            <button onclick="requestWithdraw()" id="wd-btn" class="btn-premium" style="width:100%; padding:16px; margin-bottom:16px;">WITHDRAW NOW</button>
-            <div style="padding:16px; background:rgba(234, 179, 8, 0.1); border:1px solid rgba(234, 179, 8, 0.2); border-radius:12px; font-size:10px; color:#eab308; line-height:1.5;">
-                <strong>Conditions:</strong><br>
-                1. Minimum ₹100.<br>
-                2. Active ₹200 Package Required.<br>
-                3. 3 Direct Referrals with ₹200 Package Required.
-            </div>
-        </div>
-    </div>
-
-    <!-- TEAM PAGE -->
-    <div id="page-referral" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">My Team</h1></header>
-        <div style="display:flex; gap:8px; margin-bottom:24px;">
-            <button onclick="loadTeam(1)" style="flex:1; background:#111; padding:12px; border-radius:12px; font-size:12px; font-weight:bold; color:white; border:none;">Level 1</button>
-            <button onclick="loadTeam(2)" style="flex:1; background:#111; padding:12px; border-radius:12px; font-size:12px; font-weight:bold; color:white; border:none;">Level 2</button>
-            <button onclick="loadTeam(3)" style="flex:1; background:#111; padding:12px; border-radius:12px; font-size:12px; font-weight:bold; color:white; border:none;">Level 3</button>
-        </div>
-        <div id="team-list" style="display:flex; flex-direction:column; gap:12px;">
-            <p style="text-align:center; color:#777; font-size:14px;">Select a level to view team</p>
-        </div>
-    </div>
-
-    <!-- INCOME PAGE -->
-    <div id="page-income" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Income Report</h1></header>
-        <div class="glass-card" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Daily Package ROI</span><span id="inc-pkg">₹ 0</span></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Level 1 Income</span><span id="inc-l1">₹ 0</span></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Level 2 Income</span><span id="inc-l2">₹ 0</span></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:8px;"><span>Level 3 Income</span><span id="inc-l3">₹ 0</span></div>
-            <div style="display:flex; justify-content:space-between; padding-top:8px; font-weight:bold; color:#22c55e; font-size:18px;"><span>Total Balance</span><span id="inc-total">₹ 0</span></div>
-        </div>
-    </div>
-
-    <!-- PACKAGE PAGE -->
-    <div id="page-package" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Investment Packages</h1></header>
-        <div style="display:flex; flex-direction:column; gap:16px;">
-            <div class="glass-card" style="padding:24px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #22c55e;">
-                <div><h3 style="font-weight:bold; font-size:20px; margin:0 0 4px 0;">₹ 200</h3><p style="font-size:12px; color:#777; margin:0;">Earn ₹10 Daily</p></div>
-                <button onclick="buyPack(200)" style="background:#16a34a; padding:8px 24px; border-radius:12px; font-weight:bold; font-size:14px; border:none; color:white;">BUY</button>
-            </div>
-            <div class="glass-card" style="padding:24px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #3b82f6;">
-                <div><h3 style="font-weight:bold; font-size:20px; margin:0 0 4px 0;">₹ 500</h3><p style="font-size:12px; color:#777; margin:0;">Earn ₹30 Daily</p></div>
-                <button onclick="buyPack(500)" style="background:#16a34a; padding:8px 24px; border-radius:12px; font-weight:bold; font-size:14px; border:none; color:white;">BUY</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TRANSFER PAGE -->
-    <div id="page-transfer" class="page p-5 max-w-md mx-auto" style="padding: 20px; max-width: 450px; margin: 0 auto;">
-        <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; margin:0;">Fund Transfer</h1></header>
-        <div class="glass-card" style="padding:24px;">
-            <p style="font-size:10px; color:#777; margin:0 0 16px 0;">Transfer Income Balance to another user's Topup Balance.</p>
-            <input type="text" id="tr-id" placeholder="Receiver User ID (KP...)">
-            <input type="number" id="tr-amt" placeholder="Amount">
-            <button onclick="transferFund()" id="tr-btn" class="btn-premium" style="width:100%; padding:16px;">TRANSFER NOW</button>
-        </div>
-    </div>
-
-    <!-- ADMIN PANEL -->
     <div id="page-admin" class="page p-5" style="padding: 20px;">
         <header class="flex items-center gap-4 mb-8" style="display:flex; align-items:center; gap:16px; margin-bottom:32px;"><button onclick="navigate('home')" style="padding:12px; background:#111; border-radius:12px; border:none; color:white;"><i data-lucide="arrow-left"></i></button><h1 style="font-size:20px; font-weight:bold; color:#ef4444; margin:0;">Admin Panel</h1></header>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
@@ -384,6 +264,7 @@
         let user = null;
         let userData = null;
 
+        // Navigation (Auto loads Level 1 for Team)
         window.navigate = (id) => {
             const target = document.getElementById('page-' + id);
             if (!target) return; 
@@ -391,6 +272,8 @@
             target.classList.add('active');
             toggleSidebar(false);
             window.scrollTo(0,0);
+            
+            if(id === 'referral') { loadTeam(1); }
         };
 
         window.toggleSidebar = (s) => {
@@ -447,7 +330,7 @@
             
             getDocs(query(collection(db, "users"), where("referralId", "==", userData.userId))).then(s => {
                 document.getElementById('dash-refs').innerText = s.size;
-            });
+            }).catch(e => console.error(e));
         };
 
         window.saveBank = async () => {
@@ -488,29 +371,90 @@
             }
         };
 
+        // ==========================================
+        // FIXED WITHDRAWAL LOGIC (No Index Needed)
+        // ==========================================
         window.requestWithdraw = async () => {
-            const amt = Number(document.getElementById('wd-amt').value);
-            if(amt < 100) return alert("Minimum withdrawal is ₹100");
-            if(userData.incomeBalance < amt) return alert("Insufficient Income Balance");
-            if(userData.package < 200) return alert("You need at least ₹200 Package to withdraw");
-            if(!userData.bankLocked) return alert("Please lock bank details first!");
-            
-            const q = query(collection(db, "users"), where("referralId", "==", userData.userId), where("package", ">=", 200));
-            const s = await getDocs(q);
-            if(s.size < 3) return alert("3 Direct referrals with active package required!");
+            try {
+                const amt = Number(document.getElementById('wd-amt').value);
+                
+                // Basics check
+                if(amt < 100) return alert("Minimum withdrawal is ₹100");
+                if(userData.incomeBalance < amt) return alert("Insufficient Income Balance");
+                if(userData.package < 200) return alert("You need at least ₹200 Package to withdraw");
+                if(!userData.bankLocked) return alert("Please lock bank details first!");
+                
+                // Change UI status to loading
+                const btn = document.getElementById('wd-btn');
+                btn.disabled = true;
+                btn.innerText = "Checking Details...";
+                
+                // Fetch direct referrals (Bina >= 200 index ke)
+                const q = query(collection(db, "users"), where("referralId", "==", userData.userId));
+                const s = await getDocs(q);
+                
+                // Javascript me count karo active accounts
+                let activeReferrals = 0;
+                s.forEach(doc => {
+                    if (doc.data().package >= 200) {
+                        activeReferrals++;
+                    }
+                });
 
-            document.getElementById('wd-btn').disabled = true;
-            await addDoc(collection(db, "withdrawals"), {
-                uid: user.uid, userId: userData.userId, amount: amt, bank: userData.bankDetails, status: 'Pending', date: new Date()
-            });
-            await updateDoc(doc(db, "users", user.uid), { incomeBalance: increment(-amt) });
-            alert("Withdrawal request sent!");
-            document.getElementById('wd-btn').disabled = false;
+                // Condition check
+                if(activeReferrals < 3) {
+                    btn.disabled = false;
+                    btn.innerText = "WITHDRAW NOW";
+                    return alert(`3 Direct referrals with minimum ₹200 package required! (Your active direct referrals: ${activeReferrals})`);
+                }
+
+                // Everything is good, process withdrawal
+                btn.innerText = "Processing...";
+                await addDoc(collection(db, "withdrawals"), {
+                    uid: user.uid, 
+                    userId: userData.userId, 
+                    amount: amt, 
+                    bank: userData.bankDetails, 
+                    status: 'Pending', 
+                    date: new Date()
+                });
+                
+                await updateDoc(doc(db, "users", user.uid), { 
+                    incomeBalance: increment(-amt) 
+                });
+                
+                alert("Withdrawal request sent successfully!");
+                document.getElementById('wd-amt').value = ""; // clear input
+                btn.innerText = "WITHDRAW NOW";
+                btn.disabled = false;
+                
+                navigate('home');
+                
+            } catch (error) {
+                console.error("Withdraw Error:", error);
+                alert("System Error: " + error.message);
+                const btn = document.getElementById('wd-btn');
+                if(btn) {
+                    btn.innerText = "WITHDRAW NOW";
+                    btn.disabled = false;
+                }
+            }
         };
 
+        // ==========================================
+        // FIXED TEAM LOGIC (Chunked array to bypass 10-limit)
+        // ==========================================
         window.loadTeam = async (lvl) => {
+            for(let i = 1; i <= 3; i++) {
+                const btn = document.getElementById('btn-lvl-' + i);
+                if(btn) {
+                    btn.style.background = (i === lvl) ? '#22c55e' : '#111';
+                    btn.style.color = (i === lvl) ? '#000' : 'white';
+                }
+            }
+
             const list = document.getElementById('team-list');
-            list.innerHTML = "<p style='text-align:center; padding:16px;'>Loading team...</p>";
+            list.innerHTML = "<p style='text-align:center; padding:16px; color:#22c55e;'>Loading team...</p>";
             
             try {
                 let currentIds = [userData.userId];
@@ -518,35 +462,43 @@
 
                 for(let i=1; i<=lvl; i++) {
                     if(currentIds.length === 0) break;
-                    const q = query(collection(db, "users"), where("referralId", "in", currentIds));
-                    const s = await getDocs(q);
-                    currentIds = [];
+                    
+                    let nextIds = [];
                     let levelResults = [];
-                    s.forEach(d => {
-                        const u = d.data();
-                        levelResults.push(u);
-                        currentIds.push(u.userId);
-                    });
+
+                    for (let j = 0; j < currentIds.length; j += 10) {
+                        const chunk = currentIds.slice(j, j + 10);
+                        const q = query(collection(db, "users"), where("referralId", "in", chunk));
+                        const s = await getDocs(q);
+                        
+                        s.forEach(d => {
+                            const u = d.data();
+                            levelResults.push(u);
+                            nextIds.push(u.userId);
+                        });
+                    }
+                    
+                    currentIds = nextIds;
                     if(i === lvl) teamData = levelResults;
                 }
 
                 let h = "";
                 teamData.forEach(u => {
                     const isActive = u.package > 0;
-                    h += `<div class="glass-card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; border-left:2px solid ${isActive ? '#22c55e' : '#ef4444'};">
+                    h += `<div class="glass-card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid ${isActive ? '#22c55e' : '#ef4444'}; margin-bottom: 12px;">
                         <div>
-                            <p style="font-weight:bold; font-size:14px; margin:0 0 4px 0;">${u.name}</p>
-                            <p style="font-size:10px; color:#777; margin:0;">${u.userId}</p>
+                            <p style="font-weight:bold; font-size:15px; margin:0 0 4px 0;">${u.name}</p>
+                            <p style="font-size:11px; color:#777; margin:0; font-family: monospace;">ID: ${u.userId}</p>
                         </div>
-                        <span style="font-size:10px; font-weight:bold; color:${isActive ? '#22c55e' : '#f87171'};">
+                        <span style="font-size:10px; font-weight:900; letter-spacing:0.5px; padding:4px 8px; border-radius:6px; background:${isActive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}; color:${isActive ? '#22c55e' : '#f87171'};">
                             ${isActive ? 'ACTIVE' : 'INACTIVE'}
                         </span>
                     </div>`;
                 });
-                list.innerHTML = h || `<p style="text-align:center; color:#777; font-size:14px; padding:16px;">No team members at Level ${lvl}</p>`;
+                list.innerHTML = h || `<p style="text-align:center; color:#777; font-size:14px; padding:16px;">No team members found at Level ${lvl}</p>`;
             } catch (e) { 
                 console.error(e);
-                list.innerHTML = "<p style='text-align:center; color:#ef4444;'>Error loading team.</p>"; 
+                list.innerHTML = `<p style='text-align:center; color:#ef4444;'>Error loading team: ${e.message}</p>`; 
             }
         };
 
@@ -626,7 +578,7 @@
                     let pkgInc = (u.package === 200) ? 10 : (u.package === 500 ? 30 : 0);
                     if(pkgInc > 0) {
                         await updateDoc(doc(db, "users", uDoc.id), { incomeBalance: increment(pkgInc), packageIncome: increment(pkgInc) });
-                        // Level Logic
+                        
                         let r1 = u.referralId;
                         if(r1) {
                             const q1 = query(collection(db, "users"), where("userId", "==", r1));
